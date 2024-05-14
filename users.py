@@ -37,6 +37,7 @@ class User(UserInputs):
             self.balance -= amount
             saveHistory = History_saver('Withdraw', amount)
             self.transition_history.append(saveHistory)
+            print(f"Hey {self.name}! Your {amount}tk  withdrawal was successful.")
         else:
             print("- Withdrawal amount exceeded!!!")
     
@@ -53,14 +54,17 @@ class User(UserInputs):
             print(f"!!! Your transfer amount exceeded")
     
     def take_loan(self, bank_name, amount):
-        if self.loan_limit > 0:
-            self.balance += amount
-            bank_name.loan_amount += amount
-            self.loan_limit -= 1
+        if bank_name.loan_activity:
+            if self.loan_limit > 0:
+                self.balance += amount
+                bank_name.loan_amount += amount
+                self.loan_limit -= 1
 
-            print(f"Congratulations! You got a loan of {amount}tk")
+                print(f"Congratulations! You got a loan of {amount}tk")
+            else:
+                print(f"!!! Your withdrawal limit is over")
         else:
-            print(f"!!! Your withdrawal limit is over")
+            print("!!! Loan activity currently unavailable.")
 
     def check_transition_history(self):
         for data in self.transition_history:

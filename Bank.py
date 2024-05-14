@@ -6,6 +6,7 @@ class Bank:
         self.users = []
         self.admins = []
         self.loan_amount = 0
+        self.loan_activity = False
 
     # def create_user_account(self, name, email, address, account_type):
     #     user = User(name, email, address, account_type)
