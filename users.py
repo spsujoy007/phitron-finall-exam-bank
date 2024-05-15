@@ -1,5 +1,6 @@
 from datetime import date
-from bank import Bank
+# from bank import Bank
+import random
 
 class UserInputs:
     def __init__(self, name, email, address):
@@ -14,17 +15,18 @@ class History_saver:
         self.date = date.today()
 
 class User(UserInputs):
-    def __init__(self, name, email, address, account_type):
+    def __init__(self, name, email, address, account_type, password):
         super().__init__(name, email, address)
         self.account_type = account_type
+        self.password = password
         self.balance = 0
-        self.account_number = f"{name}{email}"
+        randomno = random.randint(1, 10000)
+        self.account_number = f"{name}{randomno}"
         self.loan_limit = 2
         self.transition_history = []
-
    
     def check_balance(self):
-        return f"-------------------------------\nYour account balance is: {self.balance}tk\n-------------------------------"
+        return f"\nYour account balance is: {self.balance}tk\n"
 
     def deposit(self, amount):
         self.balance += amount
@@ -37,7 +39,7 @@ class User(UserInputs):
             self.balance -= amount
             saveHistory = History_saver('Withdraw', amount)
             self.transition_history.append(saveHistory)
-            print(f"Hey {self.name}! Your {amount}tk  withdrawal was successful.")
+            print(f"\nHey {self.name}! Your {amount}tk  withdrawal was successful.")
         else:
             print("- Withdrawal amount exceeded!!!")
     
@@ -47,11 +49,13 @@ class User(UserInputs):
                 if user.account_number == account_number:
                     user.balance += amount
                     self.balance -= amount
+                    saveHistory = History_saver('Transfer money', amount)
+                    self.transition_history.append(saveHistory)
                     print(f"- {amount}tk successfully transfered to the account of '{user.name}' ")
                     return
-            print("!!! Account does not exist - Transfer failed")
+            print("\n!!! Account does not exist - Transfer failed")
         else:
-            print(f"!!! Your transfer amount exceeded")
+            print(f"\n!!! Your transfer amount exceeded")
     
     def take_loan(self, bank_name, amount):
         if bank_name.loan_activity:
@@ -59,32 +63,20 @@ class User(UserInputs):
                 self.balance += amount
                 bank_name.loan_amount += amount
                 self.loan_limit -= 1
+                saveHistory = History_saver('Loan', amount)
+                self.transition_history.append(saveHistory)
 
                 print(f"Congratulations! You got a loan of {amount}tk")
             else:
-                print(f"!!! Your withdrawal limit is over")
+                print(f"!!! Your laon limit is over")
         else:
             print("!!! Loan activity currently unavailable.")
 
     def check_transition_history(self):
+        print("\nTransaction history: ")
         for data in self.transition_history:
-            print(f'{data.type} | {data.amount}tk in {data.date}')
+            print(f'- {data.type} \t| {data.amount}tk in {data.date}')
 
 class Admin(UserInputs):
     def __init__(self, name, email, address):
         super().__init__(name, email, address)
-    
-    def remove_user(self, bank_name, account_number):
-        for user in bank_name.users:
-            if user.account_number == account_number:
-                bank_name.users.remove(user)
-
-    def view_users(self, bank_name):
-        for user in bank_name.users:
-            print(f"info: {user.name}, {user.balance}tk, {user.account_type}, {user.account_number}")
-
-    def view_loan_amount(self, bank_name):
-        print(f"Total loan amount is: {bank_name.loan_amount}tk")
-
-    def bank_balance(self, bank):
-        print(f"- Total balance: {bank.bank_balance}tk")

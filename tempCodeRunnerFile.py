@@ -1,2 +1,2 @@
-
-    print(f"Info: {user.name}, {user.balance}tk, {user
+n(adminname, email, address)
+    # cityBank.admins
